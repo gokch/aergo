@@ -20,17 +20,17 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// EnterpriseServiceName is the fully-qualified name of the EnterpriseService service.
-	EnterpriseServiceName = "types.EnterpriseService"
+	EnterpriseServiceName = "api.EnterpriseService"
 )
 
-// EnterpriseServiceClient is a client for the types.EnterpriseService service.
+// EnterpriseServiceClient is a client for the api.EnterpriseService service.
 type EnterpriseServiceClient interface {
 }
 
-// NewEnterpriseServiceClient constructs a client for the types.EnterpriseService service. By
-// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
-// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
-// connect.WithGRPC() or connect.WithGRPCWeb() options.
+// NewEnterpriseServiceClient constructs a client for the api.EnterpriseService service. By default,
+// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
+// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
+// or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -43,7 +43,7 @@ func NewEnterpriseServiceClient(httpClient connect_go.HTTPClient, baseURL string
 type enterpriseServiceClient struct {
 }
 
-// EnterpriseServiceHandler is an implementation of the types.EnterpriseService service.
+// EnterpriseServiceHandler is an implementation of the api.EnterpriseService service.
 type EnterpriseServiceHandler interface {
 }
 
@@ -54,7 +54,7 @@ type EnterpriseServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewEnterpriseServiceHandler(svc EnterpriseServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	return "/types.EnterpriseService/", mux
+	return "/api.EnterpriseService/", mux
 }
 
 // UnimplementedEnterpriseServiceHandler returns CodeUnimplemented from all methods.

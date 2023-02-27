@@ -55,6 +55,7 @@ realclean: clean
 
 $(BUILD_RULES): $(BUILD_FILE)
 	@$(MAKE) --no-print-directory -C $(BUILD_DIR) $@
+
 protoc:
 	protoc \
 	--proto_path=./aergo-protobuf/proto \

@@ -22,17 +22,17 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// WalletServiceName is the fully-qualified name of the WalletService service.
-	WalletServiceName = "types.WalletService"
+	WalletServiceName = "api.WalletService"
 )
 
-// WalletServiceClient is a client for the types.WalletService service.
+// WalletServiceClient is a client for the api.WalletService service.
 type WalletServiceClient interface {
 	Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 	Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 }
 
-// NewWalletServiceClient constructs a client for the types.WalletService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewWalletServiceClient constructs a client for the api.WalletService service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -43,12 +43,12 @@ func NewWalletServiceClient(httpClient connect_go.HTTPClient, baseURL string, op
 	return &walletServiceClient{
 		_import: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/types.WalletService/Import",
+			baseURL+"/api.WalletService/Import",
 			opts...,
 		),
 		export: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/types.WalletService/Export",
+			baseURL+"/api.WalletService/Export",
 			opts...,
 		),
 	}
@@ -60,17 +60,17 @@ type walletServiceClient struct {
 	export  *connect_go.Client[types.Empty, types.Empty]
 }
 
-// Import calls types.WalletService.Import.
+// Import calls api.WalletService.Import.
 func (c *walletServiceClient) Import(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c._import.CallUnary(ctx, req)
 }
 
-// Export calls types.WalletService.Export.
+// Export calls api.WalletService.Export.
 func (c *walletServiceClient) Export(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c.export.CallUnary(ctx, req)
 }
 
-// WalletServiceHandler is an implementation of the types.WalletService service.
+// WalletServiceHandler is an implementation of the api.WalletService service.
 type WalletServiceHandler interface {
 	Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 	Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
@@ -83,26 +83,26 @@ type WalletServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewWalletServiceHandler(svc WalletServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/types.WalletService/Import", connect_go.NewUnaryHandler(
-		"/types.WalletService/Import",
+	mux.Handle("/api.WalletService/Import", connect_go.NewUnaryHandler(
+		"/api.WalletService/Import",
 		svc.Import,
 		opts...,
 	))
-	mux.Handle("/types.WalletService/Export", connect_go.NewUnaryHandler(
-		"/types.WalletService/Export",
+	mux.Handle("/api.WalletService/Export", connect_go.NewUnaryHandler(
+		"/api.WalletService/Export",
 		svc.Export,
 		opts...,
 	))
-	return "/types.WalletService/", mux
+	return "/api.WalletService/", mux
 }
 
 // UnimplementedWalletServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedWalletServiceHandler struct{}
 
 func (UnimplementedWalletServiceHandler) Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("types.WalletService.Import is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.WalletService.Import is not implemented"))
 }
 
 func (UnimplementedWalletServiceHandler) Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("types.WalletService.Export is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.WalletService.Export is not implemented"))
 }

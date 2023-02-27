@@ -110,6 +110,7 @@ func (vs *ViewerService) QueryContract(context.Context, *connect_go.Request[type
 func (vs *ViewerService) GetAccount(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Account], error) {
 	return nil, nil
 }
+
 func (vs *ViewerService) GetName(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return nil, nil
 }
