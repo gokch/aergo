@@ -48,9 +48,9 @@ func (vs *ViewerService) GetBestBlock(context.Context, *connect_go.Request[types
 	return nil, nil
 }
 
-func (vs *ViewerService) GetBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error) {
+func (vs *ViewerService) GetBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
 	ca := vs.actorHelper.GetChainAccessor()
-	bestBlock, err := ca.GetBlock()
+	bestBlock, err := ca.GetBestBlock()
 	if err != nil {
 		return nil, err
 	}
@@ -60,10 +60,10 @@ func (vs *ViewerService) GetBlock(context.Context, *connect_go.Request[types.Emp
 }
 
 func (vs *ViewerService) GetBlockByNum(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error) {
-
+	return nil, nil
 }
 
-func (vs *ViewerService) GetBlockList(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.BlockHeaderList], error) {
+func (vs *ViewerService) GetBlockList(context.Context, *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
 	return nil, nil
 }
 
@@ -101,6 +101,7 @@ func (vs *ViewerService) GetEventStream(context.Context, *connect_go.Request[typ
 func (vs *ViewerService) GetContract(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return nil, nil
 }
+
 func (vs *ViewerService) QueryContract(context.Context, *connect_go.Request[types.Query]) (*connect_go.Response[types.SingleBytes], error) {
 	return nil, nil
 }
