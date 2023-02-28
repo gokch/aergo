@@ -1,0 +1,9 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/aergoio/aergo/types
+plugins:
+  - plugin: buf.build/bufbuild/connect-go
+    out: ./api
+    opt: paths=source_relative
