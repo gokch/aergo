@@ -22,17 +22,17 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// ViewerServiceName is the fully-qualified name of the ViewerService service.
-	ViewerServiceName = "api.ViewerService"
+	ViewerServiceName = "service.ViewerService"
 )
 
-// ViewerServiceClient is a client for the api.ViewerService service.
+// ViewerServiceClient is a client for the service.ViewerService service.
 type ViewerServiceClient interface {
 	// server status
 	Ping(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error)
 	GetChainInfo(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error)
 	GetNodeState(context.Context, *connect_go.Request[types.NodeReq]) (*connect_go.Response[types.SingleBytes], error)
 	GetMetric(context.Context, *connect_go.Request[types.MetricsRequest]) (*connect_go.Response[types.Metrics], error)
-	GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
+	GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error)
 	// block
 	GetBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error)
 	GetBlockMetadata(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error)
@@ -54,8 +54,8 @@ type ViewerServiceClient interface {
 	GetNameInfo(context.Context, *connect_go.Request[types.Name]) (*connect_go.Response[types.NameInfo], error)
 }
 
-// NewViewerServiceClient constructs a client for the api.ViewerService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewViewerServiceClient constructs a client for the service.ViewerService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -66,92 +66,92 @@ func NewViewerServiceClient(httpClient connect_go.HTTPClient, baseURL string, op
 	return &viewerServiceClient{
 		ping: connect_go.NewClient[types.Empty, types.SingleBytes](
 			httpClient,
-			baseURL+"/api.ViewerService/Ping",
+			baseURL+"/service.ViewerService/Ping",
 			opts...,
 		),
 		getChainInfo: connect_go.NewClient[types.Empty, types.ChainInfo](
 			httpClient,
-			baseURL+"/api.ViewerService/GetChainInfo",
+			baseURL+"/service.ViewerService/GetChainInfo",
 			opts...,
 		),
 		getNodeState: connect_go.NewClient[types.NodeReq, types.SingleBytes](
 			httpClient,
-			baseURL+"/api.ViewerService/GetNodeState",
+			baseURL+"/service.ViewerService/GetNodeState",
 			opts...,
 		),
 		getMetric: connect_go.NewClient[types.MetricsRequest, types.Metrics](
 			httpClient,
-			baseURL+"/api.ViewerService/GetMetric",
+			baseURL+"/service.ViewerService/GetMetric",
 			opts...,
 		),
-		getBestBlock: connect_go.NewClient[types.Empty, types.Empty](
+		getBestBlock: connect_go.NewClient[types.Empty, types.Block](
 			httpClient,
-			baseURL+"/api.ViewerService/GetBestBlock",
+			baseURL+"/service.ViewerService/GetBestBlock",
 			opts...,
 		),
 		getBlock: connect_go.NewClient[types.SingleBytes, types.Block](
 			httpClient,
-			baseURL+"/api.ViewerService/GetBlock",
+			baseURL+"/service.ViewerService/GetBlock",
 			opts...,
 		),
 		getBlockMetadata: connect_go.NewClient[types.SingleBytes, types.BlockMetadata](
 			httpClient,
-			baseURL+"/api.ViewerService/GetBlockMetadata",
+			baseURL+"/service.ViewerService/GetBlockMetadata",
 			opts...,
 		),
 		getBlockList: connect_go.NewClient[types.ListParams, types.BlockHeaderList](
 			httpClient,
-			baseURL+"/api.ViewerService/GetBlockList",
+			baseURL+"/service.ViewerService/GetBlockList",
 			opts...,
 		),
 		getTx: connect_go.NewClient[types.SingleBytes, types.Tx](
 			httpClient,
-			baseURL+"/api.ViewerService/GetTx",
+			baseURL+"/service.ViewerService/GetTx",
 			opts...,
 		),
 		getTxInBlock: connect_go.NewClient[types.SingleBytes, types.TxInBlock](
 			httpClient,
-			baseURL+"/api.ViewerService/GetTxInBlock",
+			baseURL+"/service.ViewerService/GetTxInBlock",
 			opts...,
 		),
 		getReceipt: connect_go.NewClient[types.SingleBytes, types.Receipt](
 			httpClient,
-			baseURL+"/api.ViewerService/GetReceipt",
+			baseURL+"/service.ViewerService/GetReceipt",
 			opts...,
 		),
 		getReceiptInBlock: connect_go.NewClient[types.SingleBytes, types.Receipt](
 			httpClient,
-			baseURL+"/api.ViewerService/GetReceiptInBlock",
+			baseURL+"/service.ViewerService/GetReceiptInBlock",
 			opts...,
 		),
 		getEvent: connect_go.NewClient[types.FilterInfo, types.Event](
 			httpClient,
-			baseURL+"/api.ViewerService/GetEvent",
+			baseURL+"/service.ViewerService/GetEvent",
 			opts...,
 		),
 		getEventList: connect_go.NewClient[types.FilterInfo, types.EventList](
 			httpClient,
-			baseURL+"/api.ViewerService/GetEventList",
+			baseURL+"/service.ViewerService/GetEventList",
 			opts...,
 		),
 		queryContract: connect_go.NewClient[types.Query, types.SingleBytes](
 			httpClient,
-			baseURL+"/api.ViewerService/QueryContract",
+			baseURL+"/service.ViewerService/QueryContract",
 			opts...,
 		),
 		getABI: connect_go.NewClient[types.SingleBytes, types.ABI](
 			httpClient,
-			baseURL+"/api.ViewerService/GetABI",
+			baseURL+"/service.ViewerService/GetABI",
 			opts...,
 		),
 		getAccountState: connect_go.NewClient[types.SingleBytes, types.State](
 			httpClient,
-			baseURL+"/api.ViewerService/GetAccountState",
+			baseURL+"/service.ViewerService/GetAccountState",
 			opts...,
 		),
 		getNameInfo: connect_go.NewClient[types.Name, types.NameInfo](
 			httpClient,
-			baseURL+"/api.ViewerService/GetNameInfo",
+			baseURL+"/service.ViewerService/GetNameInfo",
 			opts...,
 		),
 	}
@@ -163,7 +163,7 @@ type viewerServiceClient struct {
 	getChainInfo      *connect_go.Client[types.Empty, types.ChainInfo]
 	getNodeState      *connect_go.Client[types.NodeReq, types.SingleBytes]
 	getMetric         *connect_go.Client[types.MetricsRequest, types.Metrics]
-	getBestBlock      *connect_go.Client[types.Empty, types.Empty]
+	getBestBlock      *connect_go.Client[types.Empty, types.Block]
 	getBlock          *connect_go.Client[types.SingleBytes, types.Block]
 	getBlockMetadata  *connect_go.Client[types.SingleBytes, types.BlockMetadata]
 	getBlockList      *connect_go.Client[types.ListParams, types.BlockHeaderList]
@@ -179,104 +179,104 @@ type viewerServiceClient struct {
 	getNameInfo       *connect_go.Client[types.Name, types.NameInfo]
 }
 
-// Ping calls api.ViewerService.Ping.
+// Ping calls service.ViewerService.Ping.
 func (c *viewerServiceClient) Ping(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error) {
 	return c.ping.CallUnary(ctx, req)
 }
 
-// GetChainInfo calls api.ViewerService.GetChainInfo.
+// GetChainInfo calls service.ViewerService.GetChainInfo.
 func (c *viewerServiceClient) GetChainInfo(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error) {
 	return c.getChainInfo.CallUnary(ctx, req)
 }
 
-// GetNodeState calls api.ViewerService.GetNodeState.
+// GetNodeState calls service.ViewerService.GetNodeState.
 func (c *viewerServiceClient) GetNodeState(ctx context.Context, req *connect_go.Request[types.NodeReq]) (*connect_go.Response[types.SingleBytes], error) {
 	return c.getNodeState.CallUnary(ctx, req)
 }
 
-// GetMetric calls api.ViewerService.GetMetric.
+// GetMetric calls service.ViewerService.GetMetric.
 func (c *viewerServiceClient) GetMetric(ctx context.Context, req *connect_go.Request[types.MetricsRequest]) (*connect_go.Response[types.Metrics], error) {
 	return c.getMetric.CallUnary(ctx, req)
 }
 
-// GetBestBlock calls api.ViewerService.GetBestBlock.
-func (c *viewerServiceClient) GetBestBlock(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+// GetBestBlock calls service.ViewerService.GetBestBlock.
+func (c *viewerServiceClient) GetBestBlock(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error) {
 	return c.getBestBlock.CallUnary(ctx, req)
 }
 
-// GetBlock calls api.ViewerService.GetBlock.
+// GetBlock calls service.ViewerService.GetBlock.
 func (c *viewerServiceClient) GetBlock(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
 	return c.getBlock.CallUnary(ctx, req)
 }
 
-// GetBlockMetadata calls api.ViewerService.GetBlockMetadata.
+// GetBlockMetadata calls service.ViewerService.GetBlockMetadata.
 func (c *viewerServiceClient) GetBlockMetadata(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error) {
 	return c.getBlockMetadata.CallUnary(ctx, req)
 }
 
-// GetBlockList calls api.ViewerService.GetBlockList.
+// GetBlockList calls service.ViewerService.GetBlockList.
 func (c *viewerServiceClient) GetBlockList(ctx context.Context, req *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
 	return c.getBlockList.CallUnary(ctx, req)
 }
 
-// GetTx calls api.ViewerService.GetTx.
+// GetTx calls service.ViewerService.GetTx.
 func (c *viewerServiceClient) GetTx(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Tx], error) {
 	return c.getTx.CallUnary(ctx, req)
 }
 
-// GetTxInBlock calls api.ViewerService.GetTxInBlock.
+// GetTxInBlock calls service.ViewerService.GetTxInBlock.
 func (c *viewerServiceClient) GetTxInBlock(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.TxInBlock], error) {
 	return c.getTxInBlock.CallUnary(ctx, req)
 }
 
-// GetReceipt calls api.ViewerService.GetReceipt.
+// GetReceipt calls service.ViewerService.GetReceipt.
 func (c *viewerServiceClient) GetReceipt(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
 	return c.getReceipt.CallUnary(ctx, req)
 }
 
-// GetReceiptInBlock calls api.ViewerService.GetReceiptInBlock.
+// GetReceiptInBlock calls service.ViewerService.GetReceiptInBlock.
 func (c *viewerServiceClient) GetReceiptInBlock(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
 	return c.getReceiptInBlock.CallUnary(ctx, req)
 }
 
-// GetEvent calls api.ViewerService.GetEvent.
+// GetEvent calls service.ViewerService.GetEvent.
 func (c *viewerServiceClient) GetEvent(ctx context.Context, req *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.Event], error) {
 	return c.getEvent.CallUnary(ctx, req)
 }
 
-// GetEventList calls api.ViewerService.GetEventList.
+// GetEventList calls service.ViewerService.GetEventList.
 func (c *viewerServiceClient) GetEventList(ctx context.Context, req *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.EventList], error) {
 	return c.getEventList.CallUnary(ctx, req)
 }
 
-// QueryContract calls api.ViewerService.QueryContract.
+// QueryContract calls service.ViewerService.QueryContract.
 func (c *viewerServiceClient) QueryContract(ctx context.Context, req *connect_go.Request[types.Query]) (*connect_go.Response[types.SingleBytes], error) {
 	return c.queryContract.CallUnary(ctx, req)
 }
 
-// GetABI calls api.ViewerService.GetABI.
+// GetABI calls service.ViewerService.GetABI.
 func (c *viewerServiceClient) GetABI(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.ABI], error) {
 	return c.getABI.CallUnary(ctx, req)
 }
 
-// GetAccountState calls api.ViewerService.GetAccountState.
+// GetAccountState calls service.ViewerService.GetAccountState.
 func (c *viewerServiceClient) GetAccountState(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.State], error) {
 	return c.getAccountState.CallUnary(ctx, req)
 }
 
-// GetNameInfo calls api.ViewerService.GetNameInfo.
+// GetNameInfo calls service.ViewerService.GetNameInfo.
 func (c *viewerServiceClient) GetNameInfo(ctx context.Context, req *connect_go.Request[types.Name]) (*connect_go.Response[types.NameInfo], error) {
 	return c.getNameInfo.CallUnary(ctx, req)
 }
 
-// ViewerServiceHandler is an implementation of the api.ViewerService service.
+// ViewerServiceHandler is an implementation of the service.ViewerService service.
 type ViewerServiceHandler interface {
 	// server status
 	Ping(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error)
 	GetChainInfo(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error)
 	GetNodeState(context.Context, *connect_go.Request[types.NodeReq]) (*connect_go.Response[types.SingleBytes], error)
 	GetMetric(context.Context, *connect_go.Request[types.MetricsRequest]) (*connect_go.Response[types.Metrics], error)
-	GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
+	GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error)
 	// block
 	GetBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error)
 	GetBlockMetadata(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error)
@@ -305,170 +305,170 @@ type ViewerServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewViewerServiceHandler(svc ViewerServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/api.ViewerService/Ping", connect_go.NewUnaryHandler(
-		"/api.ViewerService/Ping",
+	mux.Handle("/service.ViewerService/Ping", connect_go.NewUnaryHandler(
+		"/service.ViewerService/Ping",
 		svc.Ping,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetChainInfo", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetChainInfo",
+	mux.Handle("/service.ViewerService/GetChainInfo", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetChainInfo",
 		svc.GetChainInfo,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetNodeState", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetNodeState",
+	mux.Handle("/service.ViewerService/GetNodeState", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetNodeState",
 		svc.GetNodeState,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetMetric", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetMetric",
+	mux.Handle("/service.ViewerService/GetMetric", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetMetric",
 		svc.GetMetric,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetBestBlock", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetBestBlock",
+	mux.Handle("/service.ViewerService/GetBestBlock", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetBestBlock",
 		svc.GetBestBlock,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetBlock", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetBlock",
+	mux.Handle("/service.ViewerService/GetBlock", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetBlock",
 		svc.GetBlock,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetBlockMetadata", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetBlockMetadata",
+	mux.Handle("/service.ViewerService/GetBlockMetadata", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetBlockMetadata",
 		svc.GetBlockMetadata,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetBlockList", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetBlockList",
+	mux.Handle("/service.ViewerService/GetBlockList", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetBlockList",
 		svc.GetBlockList,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetTx", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetTx",
+	mux.Handle("/service.ViewerService/GetTx", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetTx",
 		svc.GetTx,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetTxInBlock", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetTxInBlock",
+	mux.Handle("/service.ViewerService/GetTxInBlock", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetTxInBlock",
 		svc.GetTxInBlock,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetReceipt", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetReceipt",
+	mux.Handle("/service.ViewerService/GetReceipt", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetReceipt",
 		svc.GetReceipt,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetReceiptInBlock", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetReceiptInBlock",
+	mux.Handle("/service.ViewerService/GetReceiptInBlock", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetReceiptInBlock",
 		svc.GetReceiptInBlock,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetEvent", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetEvent",
+	mux.Handle("/service.ViewerService/GetEvent", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetEvent",
 		svc.GetEvent,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetEventList", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetEventList",
+	mux.Handle("/service.ViewerService/GetEventList", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetEventList",
 		svc.GetEventList,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/QueryContract", connect_go.NewUnaryHandler(
-		"/api.ViewerService/QueryContract",
+	mux.Handle("/service.ViewerService/QueryContract", connect_go.NewUnaryHandler(
+		"/service.ViewerService/QueryContract",
 		svc.QueryContract,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetABI", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetABI",
+	mux.Handle("/service.ViewerService/GetABI", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetABI",
 		svc.GetABI,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetAccountState", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetAccountState",
+	mux.Handle("/service.ViewerService/GetAccountState", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetAccountState",
 		svc.GetAccountState,
 		opts...,
 	))
-	mux.Handle("/api.ViewerService/GetNameInfo", connect_go.NewUnaryHandler(
-		"/api.ViewerService/GetNameInfo",
+	mux.Handle("/service.ViewerService/GetNameInfo", connect_go.NewUnaryHandler(
+		"/service.ViewerService/GetNameInfo",
 		svc.GetNameInfo,
 		opts...,
 	))
-	return "/api.ViewerService/", mux
+	return "/service.ViewerService/", mux
 }
 
 // UnimplementedViewerServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedViewerServiceHandler struct{}
 
 func (UnimplementedViewerServiceHandler) Ping(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.Ping is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.Ping is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetChainInfo(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetChainInfo is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetChainInfo is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetNodeState(context.Context, *connect_go.Request[types.NodeReq]) (*connect_go.Response[types.SingleBytes], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetNodeState is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetNodeState is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetMetric(context.Context, *connect_go.Request[types.MetricsRequest]) (*connect_go.Response[types.Metrics], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetMetric is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetMetric is not implemented"))
 }
 
-func (UnimplementedViewerServiceHandler) GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetBestBlock is not implemented"))
+func (UnimplementedViewerServiceHandler) GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetBestBlock is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetBlock is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetBlock is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetBlockMetadata(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetBlockMetadata is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetBlockMetadata is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetBlockList(context.Context, *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetBlockList is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetBlockList is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetTx(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Tx], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetTx is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetTx is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetTxInBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.TxInBlock], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetTxInBlock is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetTxInBlock is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetReceipt(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetReceipt is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetReceipt is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetReceiptInBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetReceiptInBlock is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetReceiptInBlock is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetEvent(context.Context, *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.Event], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetEvent is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetEvent is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetEventList(context.Context, *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.EventList], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetEventList is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetEventList is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) QueryContract(context.Context, *connect_go.Request[types.Query]) (*connect_go.Response[types.SingleBytes], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.QueryContract is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.QueryContract is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetABI(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.ABI], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetABI is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetABI is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetAccountState(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.State], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetAccountState is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetAccountState is not implemented"))
 }
 
 func (UnimplementedViewerServiceHandler) GetNameInfo(context.Context, *connect_go.Request[types.Name]) (*connect_go.Response[types.NameInfo], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.ViewerService.GetNameInfo is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ViewerService.GetNameInfo is not implemented"))
 }

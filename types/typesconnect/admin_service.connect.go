@@ -22,10 +22,10 @@ const _ = connect_go.IsAtLeastVersion0_1_0
 
 const (
 	// AdminServiceName is the fully-qualified name of the AdminService service.
-	AdminServiceName = "api.AdminService"
+	AdminServiceName = "service.AdminService"
 )
 
-// AdminServiceClient is a client for the api.AdminService service.
+// AdminServiceClient is a client for the service.AdminService service.
 type AdminServiceClient interface {
 	Keygen(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 	Mempool(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
@@ -33,8 +33,8 @@ type AdminServiceClient interface {
 	Vote(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 }
 
-// NewAdminServiceClient constructs a client for the api.AdminService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewAdminServiceClient constructs a client for the service.AdminService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -45,22 +45,22 @@ func NewAdminServiceClient(httpClient connect_go.HTTPClient, baseURL string, opt
 	return &adminServiceClient{
 		keygen: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/api.AdminService/Keygen",
+			baseURL+"/service.AdminService/Keygen",
 			opts...,
 		),
 		mempool: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/api.AdminService/Mempool",
+			baseURL+"/service.AdminService/Mempool",
 			opts...,
 		),
 		sign: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/api.AdminService/Sign",
+			baseURL+"/service.AdminService/Sign",
 			opts...,
 		),
 		vote: connect_go.NewClient[types.Empty, types.Empty](
 			httpClient,
-			baseURL+"/api.AdminService/Vote",
+			baseURL+"/service.AdminService/Vote",
 			opts...,
 		),
 	}
@@ -74,27 +74,27 @@ type adminServiceClient struct {
 	vote    *connect_go.Client[types.Empty, types.Empty]
 }
 
-// Keygen calls api.AdminService.Keygen.
+// Keygen calls service.AdminService.Keygen.
 func (c *adminServiceClient) Keygen(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c.keygen.CallUnary(ctx, req)
 }
 
-// Mempool calls api.AdminService.Mempool.
+// Mempool calls service.AdminService.Mempool.
 func (c *adminServiceClient) Mempool(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c.mempool.CallUnary(ctx, req)
 }
 
-// Sign calls api.AdminService.Sign.
+// Sign calls service.AdminService.Sign.
 func (c *adminServiceClient) Sign(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c.sign.CallUnary(ctx, req)
 }
 
-// Vote calls api.AdminService.Vote.
+// Vote calls service.AdminService.Vote.
 func (c *adminServiceClient) Vote(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
 	return c.vote.CallUnary(ctx, req)
 }
 
-// AdminServiceHandler is an implementation of the api.AdminService service.
+// AdminServiceHandler is an implementation of the service.AdminService service.
 type AdminServiceHandler interface {
 	Keygen(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 	Mempool(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
@@ -109,44 +109,44 @@ type AdminServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/api.AdminService/Keygen", connect_go.NewUnaryHandler(
-		"/api.AdminService/Keygen",
+	mux.Handle("/service.AdminService/Keygen", connect_go.NewUnaryHandler(
+		"/service.AdminService/Keygen",
 		svc.Keygen,
 		opts...,
 	))
-	mux.Handle("/api.AdminService/Mempool", connect_go.NewUnaryHandler(
-		"/api.AdminService/Mempool",
+	mux.Handle("/service.AdminService/Mempool", connect_go.NewUnaryHandler(
+		"/service.AdminService/Mempool",
 		svc.Mempool,
 		opts...,
 	))
-	mux.Handle("/api.AdminService/Sign", connect_go.NewUnaryHandler(
-		"/api.AdminService/Sign",
+	mux.Handle("/service.AdminService/Sign", connect_go.NewUnaryHandler(
+		"/service.AdminService/Sign",
 		svc.Sign,
 		opts...,
 	))
-	mux.Handle("/api.AdminService/Vote", connect_go.NewUnaryHandler(
-		"/api.AdminService/Vote",
+	mux.Handle("/service.AdminService/Vote", connect_go.NewUnaryHandler(
+		"/service.AdminService/Vote",
 		svc.Vote,
 		opts...,
 	))
-	return "/api.AdminService/", mux
+	return "/service.AdminService/", mux
 }
 
 // UnimplementedAdminServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAdminServiceHandler struct{}
 
 func (UnimplementedAdminServiceHandler) Keygen(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.AdminService.Keygen is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.AdminService.Keygen is not implemented"))
 }
 
 func (UnimplementedAdminServiceHandler) Mempool(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.AdminService.Mempool is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.AdminService.Mempool is not implemented"))
 }
 
 func (UnimplementedAdminServiceHandler) Sign(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.AdminService.Sign is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.AdminService.Sign is not implemented"))
 }
 
 func (UnimplementedAdminServiceHandler) Vote(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("api.AdminService.Vote is not implemented"))
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.AdminService.Vote is not implemented"))
 }

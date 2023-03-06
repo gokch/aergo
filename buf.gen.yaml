@@ -5,5 +5,5 @@ managed:
     default: github.com/aergoio/aergo/types
 plugins:
   - plugin: buf.build/bufbuild/connect-go
-    out: ./api
+    out: ./types
     opt: paths=source_relative

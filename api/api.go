@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/aergoio/aergo/api/typesconnect"
+	"github.com/aergoio/aergo/types/typesconnect"
 )
 
 func RegisterMux() {

@@ -3,12 +3,12 @@ package api
 import (
 	"context"
 
-	"github.com/aergoio/aergo/api/typesconnect"
 	"github.com/aergoio/aergo/consensus"
 	"github.com/aergoio/aergo/message"
 	"github.com/aergoio/aergo/p2p/p2pcommon"
 	"github.com/aergoio/aergo/pkg/component"
 	"github.com/aergoio/aergo/types"
+	"github.com/aergoio/aergo/types/typesconnect"
 	connect_go "github.com/bufbuild/connect-go"
 )
 
@@ -37,26 +37,22 @@ func (vs *ViewerService) GetMetric(context.Context, *connect_go.Request[types.Me
 	return nil, nil
 }
 
-func (vs *ViewerService) GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+func (vs *ViewerService) GetBestBlock(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Block], error) {
 	ca := vs.actorHelper.GetChainAccessor()
 	bestBlock, err := ca.GetBestBlock()
 	if err != nil {
 		return nil, err
 	}
-	_ = bestBlock
-
-	return nil, nil
+	return connect_go.NewResponse(bestBlock), nil
 }
 
-func (vs *ViewerService) GetBlock(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
+func (vs *ViewerService) GetBlock(ctx context.Context, blockHash *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
 	ca := vs.actorHelper.GetChainAccessor()
-	bestBlock, err := ca.GetBestBlock()
+	block, err := ca.GetBlock(blockHash.Msg.GetValue())
 	if err != nil {
 		return nil, err
 	}
-	_ = bestBlock
-
-	return nil, nil
+	return connect_go.NewResponse(block), nil
 }
 
 func (vs *ViewerService) GetBlockMetadata(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error) {
@@ -119,6 +115,7 @@ func (vs *ViewerService) GetToken(context.Context, *connect_go.Request[types.Emp
 func (vs *ViewerService) GetABI(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.ABI], error) {
 	return nil, nil
 }
+
 func (vs *ViewerService) GetAccountState(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.State], error) {
 	return nil, nil
 }
