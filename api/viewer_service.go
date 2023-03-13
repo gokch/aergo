@@ -2,10 +2,12 @@ package api
 
 import (
 	"context"
+	"errors"
 	"math/big"
 	"reflect"
 	"time"
 
+	"github.com/aergoio/aergo-actor/actor"
 	"github.com/aergoio/aergo-lib/log"
 	"github.com/aergoio/aergo/message"
 	"github.com/aergoio/aergo/p2p/p2pcommon"
@@ -71,7 +73,101 @@ func (vs *ViewerService) GetBlockMetadata(ctx context.Context, in *connect_go.Re
 }
 
 func (vs *ViewerService) GetBlockList(ctx context.Context, in *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
-	return nil, nil
+	if in.Msg.Size > uint32(1000) {
+		return nil, status.Errorf(codes.InvalidArgument, "Size is too big")
+	}
+
+	maxFetchSize := in.Msg.Size
+	idx := uint32(0)
+	hashes := make([][]byte, 0, maxFetchSize)
+	blocks := make([]*types.Block, 0, maxFetchSize)
+	var err error
+	if len(in.Msg.Hash) > 0 {
+		hash := in.Msg.Hash
+		for idx < maxFetchSize {
+			foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+				&message.GetBlock{BlockHash: hash}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#1"))
+			if nil != futureErr {
+				if idx == 0 {
+					err = futureErr
+				}
+				break
+			}
+			hashes = append(hashes, foundBlock.BlockHash())
+			blocks = append(blocks, foundBlock)
+			idx++
+			hash = foundBlock.Header.PrevBlockHash
+			if len(hash) == 0 {
+				break
+			}
+		}
+		if in.Msg.Asc || in.Msg.Offset != 0 {
+			err = errors.New("Has unsupported param")
+		}
+	} else {
+		end := types.BlockNo(0)
+		start := types.BlockNo(in.Msg.Height) - types.BlockNo(in.Msg.Offset)
+		if start >= types.BlockNo(maxFetchSize) {
+			end = start - types.BlockNo(maxFetchSize-1)
+		}
+		if in.Msg.Asc {
+			for i := end; i <= start; i++ {
+				foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+					&message.GetBlockByNo{BlockNo: i}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#2"))
+				if nil != futureErr {
+					if i == end {
+						err = futureErr
+					}
+					break
+				}
+				hashes = append(hashes, foundBlock.BlockHash())
+				blocks = append(blocks, foundBlock)
+				idx++
+			}
+		} else {
+			for i := start; i >= end; i-- {
+				foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+					&message.GetBlockByNo{BlockNo: i}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#2"))
+				if nil != futureErr {
+					if i == start {
+						err = futureErr
+					}
+					break
+				}
+				hashes = append(hashes, foundBlock.BlockHash())
+				blocks = append(blocks, foundBlock)
+				idx++
+			}
+		}
+	}
+	return connect_go.NewResponse(&types.BlockHeaderList{Blocks: blocks}), err
+}
+
+func extractBlockFromFuture(future *actor.Future) (*types.Block, error) {
+	rawResponse, err := future.Result()
+	if err != nil {
+		return nil, err
+	}
+	var blockRsp *message.GetBlockRsp
+	switch v := rawResponse.(type) {
+	case message.GetBlockRsp:
+		blockRsp = &v
+	case message.GetBestBlockRsp:
+		blockRsp = (*message.GetBlockRsp)(&v)
+	case message.GetBlockByNoRsp:
+		blockRsp = (*message.GetBlockRsp)(&v)
+	default:
+		return nil, errors.New("Unsupported message type")
+	}
+	return extractBlock(blockRsp)
+}
+
+func extractBlock(from *message.GetBlockRsp) (*types.Block, error) {
+	if nil != from.Err {
+		return nil, from.Err
+	}
+	return from.Block, nil
+
 }
 
 func (vs *ViewerService) GetTx(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Tx], error) {
