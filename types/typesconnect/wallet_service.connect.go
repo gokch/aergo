@@ -27,8 +27,15 @@ const (
 
 // WalletServiceClient is a client for the service.WalletService service.
 type WalletServiceClient interface {
-	Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
+	Create(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.Account], error)
+	Import(context.Context, *connect_go.Request[types.ImportFormat]) (*connect_go.Response[types.Account], error)
+	Export(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.SingleBytes], error)
+	Accounts(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.AccountList], error)
+	Make(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error)
+	Sign(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.Tx], error)
+	Verify(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.VerifyResult], error)
+	Send(context.Context, *connect_go.Request[types.TxList]) (*connect_go.Response[types.CommitResultList], error)
+	Deposit(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error)
 }
 
 // NewWalletServiceClient constructs a client for the service.WalletService service. By default, it
@@ -41,14 +48,49 @@ type WalletServiceClient interface {
 func NewWalletServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) WalletServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &walletServiceClient{
-		_import: connect_go.NewClient[types.Empty, types.Empty](
+		create: connect_go.NewClient[types.Personal, types.Account](
+			httpClient,
+			baseURL+"/service.WalletService/Create",
+			opts...,
+		),
+		_import: connect_go.NewClient[types.ImportFormat, types.Account](
 			httpClient,
 			baseURL+"/service.WalletService/Import",
 			opts...,
 		),
-		export: connect_go.NewClient[types.Empty, types.Empty](
+		export: connect_go.NewClient[types.Personal, types.SingleBytes](
 			httpClient,
 			baseURL+"/service.WalletService/Export",
+			opts...,
+		),
+		accounts: connect_go.NewClient[types.Empty, types.AccountList](
+			httpClient,
+			baseURL+"/service.WalletService/Accounts",
+			opts...,
+		),
+		make: connect_go.NewClient[types.SingleBytes, types.SingleBytes](
+			httpClient,
+			baseURL+"/service.WalletService/Make",
+			opts...,
+		),
+		sign: connect_go.NewClient[types.Tx, types.Tx](
+			httpClient,
+			baseURL+"/service.WalletService/Sign",
+			opts...,
+		),
+		verify: connect_go.NewClient[types.Tx, types.VerifyResult](
+			httpClient,
+			baseURL+"/service.WalletService/Verify",
+			opts...,
+		),
+		send: connect_go.NewClient[types.TxList, types.CommitResultList](
+			httpClient,
+			baseURL+"/service.WalletService/Send",
+			opts...,
+		),
+		deposit: connect_go.NewClient[types.SingleBytes, types.SingleBytes](
+			httpClient,
+			baseURL+"/service.WalletService/Deposit",
 			opts...,
 		),
 	}
@@ -56,24 +98,73 @@ func NewWalletServiceClient(httpClient connect_go.HTTPClient, baseURL string, op
 
 // walletServiceClient implements WalletServiceClient.
 type walletServiceClient struct {
-	_import *connect_go.Client[types.Empty, types.Empty]
-	export  *connect_go.Client[types.Empty, types.Empty]
+	create   *connect_go.Client[types.Personal, types.Account]
+	_import  *connect_go.Client[types.ImportFormat, types.Account]
+	export   *connect_go.Client[types.Personal, types.SingleBytes]
+	accounts *connect_go.Client[types.Empty, types.AccountList]
+	make     *connect_go.Client[types.SingleBytes, types.SingleBytes]
+	sign     *connect_go.Client[types.Tx, types.Tx]
+	verify   *connect_go.Client[types.Tx, types.VerifyResult]
+	send     *connect_go.Client[types.TxList, types.CommitResultList]
+	deposit  *connect_go.Client[types.SingleBytes, types.SingleBytes]
+}
+
+// Create calls service.WalletService.Create.
+func (c *walletServiceClient) Create(ctx context.Context, req *connect_go.Request[types.Personal]) (*connect_go.Response[types.Account], error) {
+	return c.create.CallUnary(ctx, req)
 }
 
 // Import calls service.WalletService.Import.
-func (c *walletServiceClient) Import(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+func (c *walletServiceClient) Import(ctx context.Context, req *connect_go.Request[types.ImportFormat]) (*connect_go.Response[types.Account], error) {
 	return c._import.CallUnary(ctx, req)
 }
 
 // Export calls service.WalletService.Export.
-func (c *walletServiceClient) Export(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+func (c *walletServiceClient) Export(ctx context.Context, req *connect_go.Request[types.Personal]) (*connect_go.Response[types.SingleBytes], error) {
 	return c.export.CallUnary(ctx, req)
+}
+
+// Accounts calls service.WalletService.Accounts.
+func (c *walletServiceClient) Accounts(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.AccountList], error) {
+	return c.accounts.CallUnary(ctx, req)
+}
+
+// Make calls service.WalletService.Make.
+func (c *walletServiceClient) Make(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error) {
+	return c.make.CallUnary(ctx, req)
+}
+
+// Sign calls service.WalletService.Sign.
+func (c *walletServiceClient) Sign(ctx context.Context, req *connect_go.Request[types.Tx]) (*connect_go.Response[types.Tx], error) {
+	return c.sign.CallUnary(ctx, req)
+}
+
+// Verify calls service.WalletService.Verify.
+func (c *walletServiceClient) Verify(ctx context.Context, req *connect_go.Request[types.Tx]) (*connect_go.Response[types.VerifyResult], error) {
+	return c.verify.CallUnary(ctx, req)
+}
+
+// Send calls service.WalletService.Send.
+func (c *walletServiceClient) Send(ctx context.Context, req *connect_go.Request[types.TxList]) (*connect_go.Response[types.CommitResultList], error) {
+	return c.send.CallUnary(ctx, req)
+}
+
+// Deposit calls service.WalletService.Deposit.
+func (c *walletServiceClient) Deposit(ctx context.Context, req *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error) {
+	return c.deposit.CallUnary(ctx, req)
 }
 
 // WalletServiceHandler is an implementation of the service.WalletService service.
 type WalletServiceHandler interface {
-	Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
+	Create(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.Account], error)
+	Import(context.Context, *connect_go.Request[types.ImportFormat]) (*connect_go.Response[types.Account], error)
+	Export(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.SingleBytes], error)
+	Accounts(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.AccountList], error)
+	Make(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error)
+	Sign(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.Tx], error)
+	Verify(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.VerifyResult], error)
+	Send(context.Context, *connect_go.Request[types.TxList]) (*connect_go.Response[types.CommitResultList], error)
+	Deposit(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error)
 }
 
 // NewWalletServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -83,6 +174,11 @@ type WalletServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewWalletServiceHandler(svc WalletServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
+	mux.Handle("/service.WalletService/Create", connect_go.NewUnaryHandler(
+		"/service.WalletService/Create",
+		svc.Create,
+		opts...,
+	))
 	mux.Handle("/service.WalletService/Import", connect_go.NewUnaryHandler(
 		"/service.WalletService/Import",
 		svc.Import,
@@ -93,16 +189,74 @@ func NewWalletServiceHandler(svc WalletServiceHandler, opts ...connect_go.Handle
 		svc.Export,
 		opts...,
 	))
+	mux.Handle("/service.WalletService/Accounts", connect_go.NewUnaryHandler(
+		"/service.WalletService/Accounts",
+		svc.Accounts,
+		opts...,
+	))
+	mux.Handle("/service.WalletService/Make", connect_go.NewUnaryHandler(
+		"/service.WalletService/Make",
+		svc.Make,
+		opts...,
+	))
+	mux.Handle("/service.WalletService/Sign", connect_go.NewUnaryHandler(
+		"/service.WalletService/Sign",
+		svc.Sign,
+		opts...,
+	))
+	mux.Handle("/service.WalletService/Verify", connect_go.NewUnaryHandler(
+		"/service.WalletService/Verify",
+		svc.Verify,
+		opts...,
+	))
+	mux.Handle("/service.WalletService/Send", connect_go.NewUnaryHandler(
+		"/service.WalletService/Send",
+		svc.Send,
+		opts...,
+	))
+	mux.Handle("/service.WalletService/Deposit", connect_go.NewUnaryHandler(
+		"/service.WalletService/Deposit",
+		svc.Deposit,
+		opts...,
+	))
 	return "/service.WalletService/", mux
 }
 
 // UnimplementedWalletServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedWalletServiceHandler struct{}
 
-func (UnimplementedWalletServiceHandler) Import(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+func (UnimplementedWalletServiceHandler) Create(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.Account], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Create is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Import(context.Context, *connect_go.Request[types.ImportFormat]) (*connect_go.Response[types.Account], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Import is not implemented"))
 }
 
-func (UnimplementedWalletServiceHandler) Export(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
+func (UnimplementedWalletServiceHandler) Export(context.Context, *connect_go.Request[types.Personal]) (*connect_go.Response[types.SingleBytes], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Export is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Accounts(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.AccountList], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Accounts is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Make(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Make is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Sign(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.Tx], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Sign is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Verify(context.Context, *connect_go.Request[types.Tx]) (*connect_go.Response[types.VerifyResult], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Verify is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Send(context.Context, *connect_go.Request[types.TxList]) (*connect_go.Response[types.CommitResultList], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Send is not implemented"))
+}
+
+func (UnimplementedWalletServiceHandler) Deposit(context.Context, *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.SingleBytes], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.WalletService.Deposit is not implemented"))
 }

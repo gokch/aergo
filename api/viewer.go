@@ -5,10 +5,8 @@ import (
 	"errors"
 	"math/big"
 	"reflect"
-	"time"
 
 	"github.com/aergoio/aergo-actor/actor"
-	"github.com/aergoio/aergo-lib/log"
 	"github.com/aergoio/aergo/message"
 	"github.com/aergoio/aergo/p2p/p2pcommon"
 	"github.com/aergoio/aergo/pkg/component"
@@ -19,29 +17,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var (
-	logger              = log.NewLogger("api")
-	defaultActorTimeout = time.Second * 3
-)
+var _ typesconnect.ViewerServiceClient = (*ViewerApi)(nil)
 
-var _ typesconnect.ViewerServiceClient = (*ViewerService)(nil)
-
-type ViewerService struct {
+type ViewerApi struct {
 	hub         *component.ComponentHub
 	actorHelper p2pcommon.ActorService
 	msgHelper   message.Helper
 }
 
-func (vs *ViewerService) GetServerInfo(ctx context.Context, in *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error) {
+func (v *ViewerApi) GetServerInfo(ctx context.Context, in *connect_go.Request[types.Empty]) (*connect_go.Response[types.ChainInfo], error) {
 	return nil, nil
 }
 
-func (vs *ViewerService) GetMempoolInfo(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error) {
+func (v *ViewerApi) GetMempoolInfo(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.SingleBytes], error) {
 	return nil, nil
 }
 
-func (vs *ViewerService) GetBlock(ctx context.Context, blockHash *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
-	ca := vs.actorHelper.GetChainAccessor()
+func (v *ViewerApi) GetBlock(ctx context.Context, blockHash *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
+	ca := v.actorHelper.GetChainAccessor()
 	block, err := ca.GetBlock(blockHash.Msg.GetValue())
 	if err != nil {
 		return nil, err
@@ -49,8 +42,8 @@ func (vs *ViewerService) GetBlock(ctx context.Context, blockHash *connect_go.Req
 	return connect_go.NewResponse(block), nil
 }
 
-func (vs *ViewerService) GetBlockByNum(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
-	ca := vs.actorHelper.GetChainAccessor()
+func (v *ViewerApi) GetBlockByNum(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Block], error) {
+	ca := v.actorHelper.GetChainAccessor()
 	blockNo := big.NewInt(0).SetBytes(in.Msg.GetValue()).Uint64()
 	blockHash, err := ca.GetHashByNo(blockNo)
 	if err != nil {
@@ -63,8 +56,8 @@ func (vs *ViewerService) GetBlockByNum(ctx context.Context, in *connect_go.Reque
 	return connect_go.NewResponse(block), nil
 }
 
-func (vs *ViewerService) GetBlockMetadata(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error) {
-	block, err := vs.GetBlock(ctx, in)
+func (v *ViewerApi) GetBlockMetadata(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.BlockMetadata], error) {
+	block, err := v.GetBlock(ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +65,9 @@ func (vs *ViewerService) GetBlockMetadata(ctx context.Context, in *connect_go.Re
 	return connect_go.NewResponse(meta), nil
 }
 
-func (vs *ViewerService) GetBlockList(ctx context.Context, in *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
+func (v *ViewerApi) GetBlockList(ctx context.Context, in *connect_go.Request[types.ListParams]) (*connect_go.Response[types.BlockHeaderList], error) {
 	if in.Msg.Size > uint32(1000) {
-		return nil, status.Errorf(codes.InvalidArgument, "Size is too big")
+		return nil, status.Errorf(codes.InvalidArgument, "size too big")
 	}
 
 	maxFetchSize := in.Msg.Size
@@ -85,7 +78,7 @@ func (vs *ViewerService) GetBlockList(ctx context.Context, in *connect_go.Reques
 	if len(in.Msg.Hash) > 0 {
 		hash := in.Msg.Hash
 		for idx < maxFetchSize {
-			foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+			foundBlock, futureErr := extractBlockFromFuture(v.hub.RequestFuture(message.ChainSvc,
 				&message.GetBlock{BlockHash: hash}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#1"))
 			if nil != futureErr {
 				if idx == 0 {
@@ -112,7 +105,7 @@ func (vs *ViewerService) GetBlockList(ctx context.Context, in *connect_go.Reques
 		}
 		if in.Msg.Asc {
 			for i := end; i <= start; i++ {
-				foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+				foundBlock, futureErr := extractBlockFromFuture(v.hub.RequestFuture(message.ChainSvc,
 					&message.GetBlockByNo{BlockNo: i}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#2"))
 				if nil != futureErr {
 					if i == end {
@@ -126,7 +119,7 @@ func (vs *ViewerService) GetBlockList(ctx context.Context, in *connect_go.Reques
 			}
 		} else {
 			for i := start; i >= end; i-- {
-				foundBlock, futureErr := extractBlockFromFuture(vs.hub.RequestFuture(message.ChainSvc,
+				foundBlock, futureErr := extractBlockFromFuture(v.hub.RequestFuture(message.ChainSvc,
 					&message.GetBlockByNo{BlockNo: i}, defaultActorTimeout, "rpc.(*AergoRPCService).ListBlockHeaders#2"))
 				if nil != futureErr {
 					if i == start {
@@ -170,12 +163,12 @@ func extractBlock(from *message.GetBlockRsp) (*types.Block, error) {
 
 }
 
-func (vs *ViewerService) GetTx(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Tx], error) {
-	result, err := vs.actorHelper.CallRequestDefaultTimeout(message.MemPoolSvc, &message.MemPoolExist{Hash: in.Msg.Value})
+func (v *ViewerApi) GetTx(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Tx], error) {
+	result, err := v.actorHelper.CallRequestDefaultTimeout(message.MemPoolSvc, &message.MemPoolExist{Hash: in.Msg.Value})
 	if err != nil {
 		return nil, err
 	}
-	tx, err := vs.msgHelper.ExtractTxFromResponse(result)
+	tx, err := v.msgHelper.ExtractTxFromResponse(result)
 	if err != nil {
 		return nil, err
 	} else if tx == nil {
@@ -185,8 +178,8 @@ func (vs *ViewerService) GetTx(ctx context.Context, in *connect_go.Request[types
 	return connect_go.NewResponse(tx), nil
 }
 
-func (vs *ViewerService) GetTxInBlock(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.TxInBlock], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetTxInBlock(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.TxInBlock], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetTx{TxHash: in.Msg.Value}, defaultActorTimeout, "rpc.(*AergoRPCService).GetBlockTX").Result()
 	if err != nil {
 		return nil, err
@@ -199,8 +192,8 @@ func (vs *ViewerService) GetTxInBlock(ctx context.Context, in *connect_go.Reques
 }
 
 // receipt
-func (vs *ViewerService) GetReceipt(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetReceipt(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.Receipt], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetReceipt{TxHash: in.Msg.Value}, defaultActorTimeout, "rpc.(*AergoRPCService).GetReceipt").Result()
 	if err != nil {
 		return nil, err
@@ -213,8 +206,8 @@ func (vs *ViewerService) GetReceipt(ctx context.Context, in *connect_go.Request[
 }
 
 // event
-func (vs *ViewerService) GetEventList(ctx context.Context, in *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.EventList], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetEventList(ctx context.Context, in *connect_go.Request[types.FilterInfo]) (*connect_go.Response[types.EventList], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.ListEvents{Filter: in.Msg}, defaultActorTimeout, "rpc.(*AergoRPCService).ListEvents").Result()
 	if err != nil {
 		return nil, err
@@ -227,8 +220,8 @@ func (vs *ViewerService) GetEventList(ctx context.Context, in *connect_go.Reques
 }
 
 // contract
-func (vs *ViewerService) QueryContract(ctx context.Context, in *connect_go.Request[types.Query]) (*connect_go.Response[types.SingleBytes], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) QueryContract(ctx context.Context, in *connect_go.Request[types.Query]) (*connect_go.Response[types.SingleBytes], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetQuery{Contract: in.Msg.ContractAddress, Queryinfo: in.Msg.Queryinfo}, defaultActorTimeout, "rpc.(*AergoRPCService).QueryContract").Result()
 	if err != nil {
 		return nil, err
@@ -240,8 +233,8 @@ func (vs *ViewerService) QueryContract(ctx context.Context, in *connect_go.Reque
 	return connect_go.NewResponse(&types.SingleBytes{Value: rsp.Result}), rsp.Err
 }
 
-func (vs *ViewerService) QueryContractState(ctx context.Context, in *connect_go.Request[types.StateQuery]) (*connect_go.Response[types.StateQueryProof], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) QueryContractState(ctx context.Context, in *connect_go.Request[types.StateQuery]) (*connect_go.Response[types.StateQueryProof], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetStateQuery{ContractAddress: in.Msg.ContractAddress, StorageKeys: in.Msg.StorageKeys, Root: in.Msg.Root, Compressed: in.Msg.Compressed}, defaultActorTimeout, "rpc.(*AergoRPCService).GetStateQuery").Result()
 	if err != nil {
 		return nil, err
@@ -253,8 +246,8 @@ func (vs *ViewerService) QueryContractState(ctx context.Context, in *connect_go.
 	return connect_go.NewResponse(rsp.Result), rsp.Err
 }
 
-func (vs *ViewerService) GetABI(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.ABI], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetABI(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.ABI], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetABI{Contract: in.Msg.Value}, defaultActorTimeout, "rpc.(*AergoRPCService).GetABI").Result()
 	if err != nil {
 		return nil, err
@@ -267,8 +260,8 @@ func (vs *ViewerService) GetABI(ctx context.Context, in *connect_go.Request[type
 }
 
 // account
-func (vs *ViewerService) GetAccountState(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.State], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetAccountState(ctx context.Context, in *connect_go.Request[types.SingleBytes]) (*connect_go.Response[types.State], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetState{Account: in.Msg.Value}, defaultActorTimeout, "rpc.(*AergoRPCService).GetState").Result()
 	if err != nil {
 		return nil, err
@@ -280,8 +273,8 @@ func (vs *ViewerService) GetAccountState(ctx context.Context, in *connect_go.Req
 	return connect_go.NewResponse(rsp.State), rsp.Err
 }
 
-func (vs *ViewerService) GetAccountStateAndProof(ctx context.Context, in *connect_go.Request[types.AccountAndRoot]) (*connect_go.Response[types.AccountProof], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetAccountStateAndProof(ctx context.Context, in *connect_go.Request[types.AccountAndRoot]) (*connect_go.Response[types.AccountProof], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetStateAndProof{Account: in.Msg.Account, Root: in.Msg.Root, Compressed: in.Msg.Compressed}, defaultActorTimeout, "rpc.(*AergoRPCService).GetStateAndProof").Result()
 	if err != nil {
 		return nil, err
@@ -293,8 +286,8 @@ func (vs *ViewerService) GetAccountStateAndProof(ctx context.Context, in *connec
 	return connect_go.NewResponse(rsp.StateProof), rsp.Err
 }
 
-func (vs *ViewerService) GetName(ctx context.Context, in *connect_go.Request[types.Name]) (*connect_go.Response[types.NameInfo], error) {
-	result, err := vs.hub.RequestFuture(message.ChainSvc,
+func (v *ViewerApi) GetName(ctx context.Context, in *connect_go.Request[types.Name]) (*connect_go.Response[types.NameInfo], error) {
+	result, err := v.hub.RequestFuture(message.ChainSvc,
 		&message.GetNameInfo{Name: in.Msg.Name, BlockNo: in.Msg.BlockNo}, defaultActorTimeout, "rpc.(*AergoRPCService).GetName").Result()
 	if err != nil {
 		return nil, err

@@ -64,3 +64,4 @@ protoc:
 	--go_out=./types \
 	--go_opt=paths=source_relative \
 	./aergo-protobuf/proto/*.proto
+	buf generate aergo-protobuf/service

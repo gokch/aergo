@@ -5,9 +5,7 @@
 package typesconnect
 
 import (
-	context "context"
-	errors "errors"
-	types "github.com/aergoio/aergo/types"
+	_ "github.com/aergoio/aergo/types"
 	connect_go "github.com/bufbuild/connect-go"
 	http "net/http"
 	strings "strings"
@@ -27,12 +25,6 @@ const (
 
 // ContractServiceClient is a client for the service.ContractService service.
 type ContractServiceClient interface {
-	TxMake(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	TxSign(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	TxSend(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	// all in one
-	TxCommit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	Deposit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 }
 
 // NewContractServiceClient constructs a client for the service.ContractService service. By default,
@@ -44,77 +36,15 @@ type ContractServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewContractServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) ContractServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	return &contractServiceClient{
-		txMake: connect_go.NewClient[types.Empty, types.Empty](
-			httpClient,
-			baseURL+"/service.ContractService/TxMake",
-			opts...,
-		),
-		txSign: connect_go.NewClient[types.Empty, types.Empty](
-			httpClient,
-			baseURL+"/service.ContractService/TxSign",
-			opts...,
-		),
-		txSend: connect_go.NewClient[types.Empty, types.Empty](
-			httpClient,
-			baseURL+"/service.ContractService/TxSend",
-			opts...,
-		),
-		txCommit: connect_go.NewClient[types.Empty, types.Empty](
-			httpClient,
-			baseURL+"/service.ContractService/TxCommit",
-			opts...,
-		),
-		deposit: connect_go.NewClient[types.Empty, types.Empty](
-			httpClient,
-			baseURL+"/service.ContractService/Deposit",
-			opts...,
-		),
-	}
+	return &contractServiceClient{}
 }
 
 // contractServiceClient implements ContractServiceClient.
 type contractServiceClient struct {
-	txMake   *connect_go.Client[types.Empty, types.Empty]
-	txSign   *connect_go.Client[types.Empty, types.Empty]
-	txSend   *connect_go.Client[types.Empty, types.Empty]
-	txCommit *connect_go.Client[types.Empty, types.Empty]
-	deposit  *connect_go.Client[types.Empty, types.Empty]
-}
-
-// TxMake calls service.ContractService.TxMake.
-func (c *contractServiceClient) TxMake(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return c.txMake.CallUnary(ctx, req)
-}
-
-// TxSign calls service.ContractService.TxSign.
-func (c *contractServiceClient) TxSign(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return c.txSign.CallUnary(ctx, req)
-}
-
-// TxSend calls service.ContractService.TxSend.
-func (c *contractServiceClient) TxSend(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return c.txSend.CallUnary(ctx, req)
-}
-
-// TxCommit calls service.ContractService.TxCommit.
-func (c *contractServiceClient) TxCommit(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return c.txCommit.CallUnary(ctx, req)
-}
-
-// Deposit calls service.ContractService.Deposit.
-func (c *contractServiceClient) Deposit(ctx context.Context, req *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return c.deposit.CallUnary(ctx, req)
 }
 
 // ContractServiceHandler is an implementation of the service.ContractService service.
 type ContractServiceHandler interface {
-	TxMake(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	TxSign(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	TxSend(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	// all in one
-	TxCommit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
-	Deposit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error)
 }
 
 // NewContractServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -124,53 +54,8 @@ type ContractServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewContractServiceHandler(svc ContractServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/service.ContractService/TxMake", connect_go.NewUnaryHandler(
-		"/service.ContractService/TxMake",
-		svc.TxMake,
-		opts...,
-	))
-	mux.Handle("/service.ContractService/TxSign", connect_go.NewUnaryHandler(
-		"/service.ContractService/TxSign",
-		svc.TxSign,
-		opts...,
-	))
-	mux.Handle("/service.ContractService/TxSend", connect_go.NewUnaryHandler(
-		"/service.ContractService/TxSend",
-		svc.TxSend,
-		opts...,
-	))
-	mux.Handle("/service.ContractService/TxCommit", connect_go.NewUnaryHandler(
-		"/service.ContractService/TxCommit",
-		svc.TxCommit,
-		opts...,
-	))
-	mux.Handle("/service.ContractService/Deposit", connect_go.NewUnaryHandler(
-		"/service.ContractService/Deposit",
-		svc.Deposit,
-		opts...,
-	))
 	return "/service.ContractService/", mux
 }
 
 // UnimplementedContractServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedContractServiceHandler struct{}
-
-func (UnimplementedContractServiceHandler) TxMake(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ContractService.TxMake is not implemented"))
-}
-
-func (UnimplementedContractServiceHandler) TxSign(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ContractService.TxSign is not implemented"))
-}
-
-func (UnimplementedContractServiceHandler) TxSend(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ContractService.TxSend is not implemented"))
-}
-
-func (UnimplementedContractServiceHandler) TxCommit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ContractService.TxCommit is not implemented"))
-}
-
-func (UnimplementedContractServiceHandler) Deposit(context.Context, *connect_go.Request[types.Empty]) (*connect_go.Response[types.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("service.ContractService.Deposit is not implemented"))
-}
