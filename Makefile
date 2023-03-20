@@ -55,13 +55,3 @@ realclean: clean
 
 $(BUILD_RULES): $(BUILD_FILE)
 	@$(MAKE) --no-print-directory -C $(BUILD_DIR) $@
-
-protoc:
-	protoc \
-	--proto_path=./aergo-protobuf/proto \
-	--go-grpc_out=./types \
-	--go-grpc_opt=paths=source_relative \
-	--go_out=./types \
-	--go_opt=paths=source_relative \
-	./aergo-protobuf/proto/*.proto
-	buf generate aergo-protobuf/service

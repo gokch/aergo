@@ -35,6 +35,18 @@ var (
 	ErrInvalidCCProgress   = errors.New("invalid conf change progress")
 )
 
+var (
+	latestKey      = []byte(chainDBName + ".latest")
+	hardforkKey    = []byte("hardfork")
+	receiptsPrefix = []byte("r")
+)
+
+const (
+	chainDBName       = "chain"
+	genesisKey        = chainDBName + ".genesisInfo"
+	genesisBalanceKey = chainDBName + ".genesisBalance"
+)
+
 // ErrNoBlock reports there is no such a block with id (hash or block number).
 type ErrNoBlock struct {
 	id interface{}
