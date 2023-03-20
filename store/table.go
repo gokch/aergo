@@ -11,10 +11,10 @@ type Table struct {
 
 var _ db.DB = (*Table)(nil)
 
-func NewTable(db db.DB, k []byte) *Table {
+func NewTable(db db.DB, prefix []byte) *Table {
 	return &Table{
 		db:     db,
-		prefix: k,
+		prefix: prefix,
 	}
 }
 
@@ -80,6 +80,13 @@ type TableIterator struct {
 
 var _ db.Iterator = (*TableIterator)(nil)
 
+func NewTableIterator(iterator db.Iterator, prefix []byte) *TableIterator {
+	return &TableIterator{
+		iterator: iterator,
+		prefix:   prefix,
+	}
+}
+
 func (t *TableIterator) Next() {
 	t.iterator.Next()
 }
@@ -101,6 +108,13 @@ func (t *TableIterator) Value() []byte {
 type TableTransaction struct {
 	transaction db.Transaction
 	prefix      []byte
+}
+
+func NewTableTransaction(transaction db.Transaction, prefix []byte) *TableTransaction {
+	return &TableTransaction{
+		transaction: transaction,
+		prefix:      prefix,
+	}
 }
 
 var _ db.Transaction = (*TableTransaction)(nil)
@@ -129,6 +143,13 @@ type TableBulk struct {
 }
 
 var _ db.Bulk = (*TableBulk)(nil)
+
+func NewTableBulk(bulk db.Bulk, prefix []byte) *TableBulk {
+	return &TableBulk{
+		bulk:   bulk,
+		prefix: prefix,
+	}
+}
 
 func (t *TableBulk) Set(key, value []byte) {
 	t.bulk.Set(append([]byte(t.prefix), key...), value)

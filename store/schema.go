@@ -1,5 +1,7 @@
 package store
 
+import "github.com/aergoio/aergo/types"
+
 // this fields define database key by types
 
 var (
@@ -11,21 +13,50 @@ var (
 	hardforkKey   = []byte("hardfork")
 	lastHeaderKey = []byte("LastHeader")
 	lastBlockKey  = []byte("LastBlock")
+
+	reOrgKey = []byte("_reorg_marker_")
 )
 
 var (
-	blockHeaderPrefix = []byte("h") // headerPrefix + num (uint64 big endian) + hash -> header
-	// blockNumberPrefix = Prefix[]byte("n") // blockNumberPrefix + hash -> num (uint64 big endian)
-	blockPrefix       = []byte("b") // blockBodyPrefix + num (uint64 big endian) + hash -> block body
-	transactionPrefix = []byte("t") // blockBodyPrefix + num (uint64 big endian) + hash -> block body
-	receiptsPrefix    = []byte("r")
-	codePrefix        = []byte("c") // CodePrefix + code hash -> account code
+	blockHeaderPrefix    = []byte("h") // headerPrefix + num (uint64 big endian) + hash -> header
+	blockNumByHashPrefix = []byte("n") // blockNumberPrefix + hash -> num (uint64 big endian)
+	blockBodyPrefix      = []byte("b") // blockBodyPrefix + num (uint64 big endian) + hash -> block body
+	blockReceiptsPrefix  = []byte("r") // blockReceiptsPrefix + num (uint64 big endian) + hash -> block receipts
 
-	blockBodyPrefix     = []byte("b") // blockBodyPrefix + num (uint64 big endian) + hash -> block body
-	blockReceiptsPrefix = []byte("r") // blockReceiptsPrefix + num (uint64 big endian) + hash -> block receipts
-	trieAccountPrefix   = []byte("A")
-	trieStoragePrefix   = []byte("O")
+	txLookupPrefix = []byte("l") // txLookupPrefix + hash -> transaction/receipt lookup metadata
+
+	codePrefix        = []byte("c") // CodePrefix + code hash -> account code
+	trieAccountPrefix = []byte("A")
+	trieStoragePrefix = []byte("O")
 )
+
+func keyBlockHeader(blockNum uint64, blockHash []byte) []byte {
+	return append(keyBlockHeaderNumber(blockNum), blockHash...)
+}
+
+func keyBlockHeaderNumber(blockNum uint64) []byte {
+	return append(blockHeaderPrefix, types.BlockNoToBytes(blockNum)...)
+}
+
+func keyBlockNumByHash(blockHash []byte) []byte {
+	return append(blockNumByHashPrefix, blockHash...)
+}
+
+func keyBlockBody(blockNum uint64, blockHash []byte) []byte {
+	return append(keyBlockBodyNumber(blockNum), blockHash...)
+}
+
+func keyBlockBodyNumber(blockNum uint64) []byte {
+	return append(blockBodyPrefix, types.BlockNoToBytes(blockNum)...)
+}
+
+func keyTxLookup(txhash []byte) []byte {
+	return append(blockBodyPrefix, txhash...)
+}
+
+func keyCode(code []byte) []byte {
+	return append(codePrefix, code...)
+}
 
 var (
 	raftIdentityKey              = []byte("r_identity")
@@ -58,6 +89,4 @@ var (
 	systemParam        = []byte("param\\")
 
 	dposLibStatusKey = []byte("dpos.LibStatus")
-
-	reOrgMarker = []byte("_reorg_marker_")
 )

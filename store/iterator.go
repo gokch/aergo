@@ -10,7 +10,7 @@ type BlockTx struct {
 	Txs   []*types.Transaction
 }
 
-func IterateTransactions(db db.DB, from, to uint64, interrupt chan struct{}) chan *BlockTx {
+func Iterate(db db.DB, from, to uint64, interrupt chan struct{}) chan *BlockTx {
 	if from >= to {
 		return nil
 	}
