@@ -204,7 +204,7 @@ func (stubSyncer *StubSyncer) handleActorMsg(inmsg interface{}) {
 	}
 }
 
-//reply to requestFuture()
+// reply to requestFuture()
 func (syncer *StubSyncer) GetAnchors(msg *message.GetAnchors) {
 	if syncer.getAnchorsHookFn != nil {
 		syncer.getAnchorsHookFn(syncer)
@@ -288,7 +288,7 @@ func (syncer *StubSyncer) GetBlockChunks(msg *message.GetBlockChunks) {
 	}()
 }
 
-//ChainService
+// ChainService
 func (syncer *StubSyncer) AddBlock(msg *message.AddBlock, responseErr error) {
 	err := syncer.localChain.AddBlock(msg.Block)
 
@@ -325,7 +325,7 @@ func makePeerReply(stubPeers []*StubPeer) *message.GetPeersRsp {
 	return &message.GetPeersRsp{Peers: peers}
 }
 
-//test block fetcher only
+// test block fetcher only
 func (stubSyncer *StubSyncer) runTestBlockFetcher(ctx *types.SyncContext) {
 	stubSyncer.realSyncer.blockFetcher = newBlockFetcher(ctx, stubSyncer.realSyncer.getCompRequester(), stubSyncer.cfg)
 	stubSyncer.realSyncer.blockFetcher.Start()

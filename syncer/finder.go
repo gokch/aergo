@@ -2,9 +2,10 @@ package syncer
 
 import (
 	"bytes"
-	"github.com/aergoio/aergo/p2p/p2putil"
 	"sync"
 	"time"
+
+	"github.com/aergoio/aergo/p2p/p2putil"
 
 	"github.com/aergoio/aergo/chain"
 	"github.com/aergoio/aergo/internal/enc"
@@ -59,7 +60,7 @@ func newFinder(ctx *types.SyncContext, compRequester component.IComponentRequest
 	return finder
 }
 
-//TODO refactoring: move logic to SyncContext (sync Object)
+// TODO refactoring: move logic to SyncContext (sync Object)
 func (finder *Finder) start() {
 	finder.waitGroup = &sync.WaitGroup{}
 	finder.waitGroup.Add(1)
@@ -192,7 +193,7 @@ func (finder *Finder) getAncestor(anchors [][]byte) (*types.BlockInfo, error) {
 	}
 }
 
-//TODO binary search scan
+// TODO binary search scan
 func (finder *Finder) fullscan() (*types.BlockInfo, error) {
 	logger.Debug().Msg("finder fullscan")
 

@@ -21,9 +21,9 @@ var (
 	blockHeaderPrefix    = []byte("h") // headerPrefix + num (uint64 big endian) + hash -> header
 	blockNumByHashPrefix = []byte("n") // blockNumberPrefix + hash -> num (uint64 big endian)
 	blockBodyPrefix      = []byte("b") // blockBodyPrefix + num (uint64 big endian) + hash -> block body
-	blockReceiptsPrefix  = []byte("r") // blockReceiptsPrefix + num (uint64 big endian) + hash -> block receipts
+	blockReceiptPrefix   = []byte("r") // blockReceiptsPrefix + num (uint64 big endian) + hash -> block receipts
 
-	txLookupPrefix = []byte("l") // txLookupPrefix + hash -> transaction/receipt lookup metadata
+	txLookupPrefix = []byte("t") // txLookupPrefix + hash -> transaction/receipt lookup metadata
 
 	codePrefix        = []byte("c") // CodePrefix + code hash -> account code
 	trieAccountPrefix = []byte("A")
@@ -50,8 +50,12 @@ func keyBlockBodyNumber(blockNum uint64) []byte {
 	return append(blockBodyPrefix, types.BlockNoToBytes(blockNum)...)
 }
 
+func keyBlockReceipt(blockNum uint64) []byte {
+	return append(blockReceiptPrefix, types.BlockNoToBytes(blockNum)...)
+}
+
 func keyTxLookup(txhash []byte) []byte {
-	return append(blockBodyPrefix, txhash...)
+	return append(txLookupPrefix, txhash...)
 }
 
 func keyCode(code []byte) []byte {

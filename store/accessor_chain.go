@@ -72,6 +72,34 @@ func DropBlockBody(w Writer, blockNo uint64, blockHash []byte) {
 	w.Delete(keyBlockBody(blockNo, blockHash))
 }
 
+// Block Receipt ( TODO )
+/*
+func ReadBlockReceipt(r Reader, blockNo uint64, blockHash []byte) *types.Receipt {
+	raw := r.Get(keyBlockBody(blockNo, blockHash))
+	if raw == nil {
+		return nil
+	}
+	receipt := new(types.Receipt)
+	err := proto.Unmarshal(raw, receipt)
+	if err != nil {
+		return nil
+	}
+	return blockBody
+}
+
+func WriteBlockBody(w Writer, blockNo uint64, blockHash []byte, blockBody *types.BlockBody) {
+	raw, err := proto.Marshal(blockBody)
+	if err != nil {
+		return
+	}
+	w.Set(keyBlockBody(blockNo, blockHash), raw)
+}
+
+func DropBlockBody(w Writer, blockNo uint64, blockHash []byte) {
+	w.Delete(keyBlockBody(blockNo, blockHash))
+}
+*/
+
 // TxLookup
 func ReadTxLookup(r Reader, txHash []byte) (blockNo uint64) {
 	raw := r.Get(keyTxLookup(txHash))
@@ -85,5 +113,3 @@ func WriteTxLookup(w Writer, txHash []byte, blockNo uint64) {
 func DropTxLookup(w Writer, txHash []byte) {
 	w.Delete(keyTxLookup(txHash))
 }
-
-// TODO: Block Receipts

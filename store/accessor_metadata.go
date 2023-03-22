@@ -30,12 +30,12 @@ func ReadReorgMarker(r Reader) []byte {
 	return r.Get(reOrgKey)
 }
 
-func WriteReorgMarker(r Reader) []byte {
-	return r.Get(reOrgKey)
+func WriteReorgMarker(w Writer, reorg []byte) {
+	w.Set(reOrgKey, reorg)
 }
 
-func DropReorgMarker(r Reader) []byte {
-	return r.Get(reOrgKey)
+func DropReorgMarker(w Writer) {
+	w.Delete(reOrgKey)
 }
 
 // config
